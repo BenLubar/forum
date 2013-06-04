@@ -8,9 +8,10 @@ import (
 	"net/http"
 
 	"github.com/couchbaselabs/go-couchbase"
+	"github.com/couchbaselabs/walrus"
 )
 
-var Bucket *couchbase.Bucket
+var Bucket walrus.Bucket
 
 func main() {
 	var (

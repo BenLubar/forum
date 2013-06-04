@@ -21,7 +21,9 @@ const (
 // NewDiscussion creates a new discussion with a unique ID. Use UpdateDiscussion
 // to save the discussion to the database.
 func NewDiscussion() (*Discussion, error) {
-	id, err := Bucket.Incr(discussion_incr_key, 1, 1, 0)
+	db_init_once.Do(db_init)
+
+	id, err := Bucket.Incr(discussion_incr_key, 1, 0, 0)
 	if err != nil {
 		return nil, err
 	}
@@ -35,6 +37,8 @@ func NewDiscussion() (*Discussion, error) {
 
 // GetDiscussion retrieves a discussion from the database.
 func GetDiscussion(id uint64) (*Discussion, error) {
+	db_init_once.Do(db_init)
+
 	var d Discussion
 
 	err := Bucket.Get(DiscussionKey(id), &d)
@@ -47,6 +51,8 @@ func GetDiscussion(id uint64) (*Discussion, error) {
 
 // UpdateDiscussion saves the given Discussion to the database.
 func UpdateDiscussion(d *Discussion) error {
+	db_init_once.Do(db_init)
+
 	d.Modified = time.Now().UTC()
 
 	return Bucket.Set(DiscussionKey(d.ID), 0, d)
@@ -55,6 +61,8 @@ func UpdateDiscussion(d *Discussion) error {
 // TouchDiscussion updates the Modified timestamp on a discussion to the
 // current time.
 func TouchDiscussion(id uint64) error {
+	db_init_once.Do(db_init)
+
 	return Bucket.Update(DiscussionKey(id), 0, func(in []byte) ([]byte, error) {
 		var d Discussion
 		err := json.Unmarshal(in, &d)

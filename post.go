@@ -23,7 +23,9 @@ const (
 // NewPost creates a new post with a unique ID and the given author and
 // discussion. Use UpdatePost to save the post to the database.
 func NewPost(author, discussion uint64) (*Post, error) {
-	id, err := Bucket.Incr(post_incr_key, 1, 1, 0)
+	db_init_once.Do(db_init)
+
+	id, err := Bucket.Incr(post_incr_key, 1, 0, 0)
 	if err != nil {
 		return nil, err
 	}
@@ -39,6 +41,8 @@ func NewPost(author, discussion uint64) (*Post, error) {
 
 // GetPost retrieves a single post from the database.
 func GetPost(id uint64) (*Post, error) {
+	db_init_once.Do(db_init)
+
 	var p Post
 
 	err := Bucket.Get(PostKey(id), &p)
@@ -52,6 +56,8 @@ func GetPost(id uint64) (*Post, error) {
 // UpdatePost saves the given Post to the database and calls TouchDiscussion
 // with the post's discussion ID.
 func UpdatePost(p *Post) error {
+	db_init_once.Do(db_init)
+
 	p.Modified = time.Now().UTC()
 
 	key := PostKey(p.ID)
