@@ -34,6 +34,7 @@ func main() {
 		log.Fatalf("error connecting to Couchbase: %v", err)
 	}
 	Bucket = b
+	go db_init_once.Do(db_init)
 
 	ln, err := net.Listen("tcp", *addr)
 	if err != nil {
