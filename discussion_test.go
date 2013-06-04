@@ -17,7 +17,7 @@ func TestDiscussion(t *testing.T) {
 	if want, got := uint64(1), d.ID; want != got {
 		t.Errorf("for ID want %d got %d", want, got)
 	}
-	if want, got := 5 * time.Second, time.Since(d.Modified); want < got || got < 0 {
+	if want, got := 5*time.Second, time.Since(d.Modified); want < got || got < 0 {
 		t.Errorf("for Modified want %v got %v", want, got)
 	}
 	if want, got := "", d.Title; want != got {
